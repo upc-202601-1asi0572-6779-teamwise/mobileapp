@@ -38,7 +38,7 @@ class SPAlertBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.18),
+        color: color.withValues(alpha: .18),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(label, style: SPType.tag.copyWith(color: color, fontSize: 10)),
