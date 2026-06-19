@@ -20,7 +20,7 @@ class SPBottomNav extends StatelessWidget {
       surfaceTintColor: Colors.transparent,
       shadowColor: const Color(0x14000000),
       elevation: 1,
-      indicatorColor: SPColors.primary.withOpacity(0.13),
+      indicatorColor: SPColors.primary.withValues(alpha:0.13),
       height: 80,
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       destinations: const [

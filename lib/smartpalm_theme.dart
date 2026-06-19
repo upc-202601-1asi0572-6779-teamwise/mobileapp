@@ -26,7 +26,7 @@ class SPTheme {
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.transparent,
-      indicatorColor: SPColors.primary.withOpacity(0.13),
+      indicatorColor: SPColors.primary.withValues(alpha: .13),
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
         final active = states.contains(WidgetState.selected);
         return TextStyle(
@@ -173,7 +173,7 @@ class SPTheme {
     onErrorContainer: Color(0xFF991B1B),
     surface:        Colors.white,
     onSurface:      SPColors.text,
-    surfaceVariant: SPColors.bg,
+    surfaceContainerHighest: SPColors.bg,
     onSurfaceVariant: SPColors.body,
     outline:        SPColors.border,
     outlineVariant: Color(0xFFF3F4F6),
