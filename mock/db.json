@@ -1,0 +1,83 @@
+{
+  "dashboard": {
+    "farmerName": "Carlos",
+    "farmName": "Fundo Las Palmas",
+    "location": "Loreto, Perú",
+    "humidity": 78,
+    "temperature": 34,
+    "phSoil": 6.4,
+    "isOnline": true,
+    "recentPlots": [
+      { "id": 1, "name": "Bloque A", "hectares": 12, "nodes": 4, "status": "saludable" },
+      { "id": 3, "name": "Bloque C", "hectares": 15, "nodes": 5, "status": "crítico" }
+    ],
+    "recentAlerts": [
+      { "level": "crit", "title": "Estrés hídrico – Bloque C", "block": "Bloque C", "timeAgo": "hace 2 min" },
+      { "level": "warn", "title": "Minador de hoja detectado",  "block": "Bloque A", "timeAgo": "hace 18 min" },
+      { "level": "info", "title": "pH bajo – posible acidez",   "block": "Bloque B", "timeAgo": "hace 1 h" }
+    ]
+  },
+  "parcelas": [
+    {
+      "id": 1, "name": "Bloque A", "hectares": 12, "nodes": 4,
+      "status": "saludable", "lastReading": "hace 2 min", "healthPct": 0.88,
+      "location": "Loreto", "humidity": 78.0, "temperature": 34.0,
+      "phSoil": 6.4, "solarLux": 52000.0,
+      "humidityHistory": [72,74,75,73,76,78,80,82,83,81,79,78,77,75,74,76,78,80,81,80,79,78,77,78],
+      "lastSync": "hace 2 min"
+    },
+    {
+      "id": 2, "name": "Bloque B", "hectares": 8, "nodes": 3,
+      "status": "advertencia", "lastReading": "hace 18 min", "healthPct": 0.55,
+      "location": "Loreto", "humidity": 65.0, "temperature": 36.0,
+      "phSoil": 5.8, "solarLux": 48000.0,
+      "humidityHistory": [60,62,63,61,64,65,67,68,66,64,62,61,60,62,64,65,66,65,64,63,62,61,60,62],
+      "lastSync": "hace 18 min"
+    },
+    {
+      "id": 3, "name": "Bloque C", "hectares": 15, "nodes": 5,
+      "status": "crítico", "lastReading": "hace 2 h", "healthPct": 0.22,
+      "location": "Loreto", "humidity": 42.0, "temperature": 38.0,
+      "phSoil": 5.2, "solarLux": 55000.0,
+      "humidityHistory": [50,48,46,44,42,40,38,36,34,32,30,29,28,27,26,25,24,24,25,26,27,28,29,30],
+      "lastSync": "hace 2 h"
+    },
+    {
+      "id": 4, "name": "Bloque D", "hectares": 6, "nodes": 2,
+      "status": "saludable", "lastReading": "hace 3 min", "healthPct": 0.91,
+      "location": "Loreto", "humidity": 81.0, "temperature": 33.0,
+      "phSoil": 6.7, "solarLux": 50000.0,
+      "humidityHistory": [78,79,80,81,82,83,82,81,80,81,82,83,82,81,80,81,82,83,82,81,80,81,82,81],
+      "lastSync": "hace 3 min"
+    }
+  ],
+  "alerts": [
+    { "id": 1, "level": "crit", "title": "Estrés hídrico - Bloque C",   "block": "Bloque C", "timeAgo": "hace 2 min" },
+    { "id": 2, "level": "warn", "title": "Minador de hoja detectado",    "block": "Bloque A", "timeAgo": "hace 18 min" },
+    { "id": 3, "level": "info", "title": "pH bajo - posible acidez",     "block": "Bloque B", "timeAgo": "hace 1 h" },
+    { "id": 4, "level": "warn", "title": "Temperatura alta (38°C)",      "block": "Bloque D", "timeAgo": "hace 3 h" },
+    { "id": 5, "level": "ok",   "title": "Sincronización · 12 nodos OK", "block": null,       "timeAgo": "hace 5 h" }
+  ],
+  "sensors": [
+    { "id": 1, "sensorId": "SP-001", "block": "Bloque A", "lastPing": "hace 2 min",  "batteryLevel": 85, "status": "activo" },
+    { "id": 2, "sensorId": "SP-002", "block": "Bloque A", "lastPing": "hace 5 min",  "batteryLevel": 72, "status": "activo" },
+    { "id": 3, "sensorId": "SP-003", "block": "Bloque B", "lastPing": "hace 18 min", "batteryLevel": 45, "status": "alerta" },
+    { "id": 4, "sensorId": "SP-004", "block": "Bloque C", "lastPing": "hace 2 h",    "batteryLevel": 12, "status": "sinsenal" },
+    { "id": 5, "sensorId": "SP-005", "block": "Bloque D", "lastPing": "hace 3 min",  "batteryLevel": 91, "status": "activo" }
+  ],
+  "reports": [
+    { "id": 1, "name": "Reporte Semana 19", "type": "PDF", "subtitle": "Fundo completo",      "createdAgo": "hace 2 días" },
+    { "id": 2, "name": "Reporte Bloque A",  "type": "PDF", "subtitle": "Bloque A · detalle",  "createdAgo": "hace 5 días" },
+    { "id": 3, "name": "Mayo 2026 Export",  "type": "CSV", "subtitle": "Exportación mensual", "createdAgo": "hace 1 sem" }
+  ],
+  "profile": {
+    "name": "Carlos Ríos",
+    "initials": "CR",
+    "farm": "Fundo Las Palmas",
+    "location": "Loreto",
+    "plan": "Plan Cosecha",
+    "totalHectares": 41,
+    "totalSensors": 14,
+    "totalParcelas": 3
+  }
+}
