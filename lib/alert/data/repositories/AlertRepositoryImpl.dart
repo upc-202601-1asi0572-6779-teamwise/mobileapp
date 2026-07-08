@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import '../../../core/error/Failure.dart';
+import '../../../feature/core/error/Failure.dart';
 import '../../domain/entities/AlertEntity.dart';
 import '../../domain/repositories/AlertRepository.dart';
 import '../datasource/AlertRemoteDataSource.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/usecases/UseCase.dart';
+import '../../../feature/core/usecases/UseCase.dart';
 import '../../domain/entities/ReportEntity.dart';
 import '../../domain/usecases/GetReportsUseCase.dart';
 import '../../domain/usecases/GenerateReportUseCase.dart';

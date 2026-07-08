@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/usecases/UseCase.dart';
+import '../../../feature/core/usecases/UseCase.dart';
 import '../../domain/entities/AlertEntity.dart';
 import '../../domain/usecases/GetAlertsUseCase.dart';
 

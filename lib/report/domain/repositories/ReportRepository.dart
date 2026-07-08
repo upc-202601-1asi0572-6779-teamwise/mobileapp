@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import '../../../core/error/Failure.dart';
+import '../../../feature/core/error/Failure.dart';
 import '../entities/ReportEntity.dart';
 
 abstract class ReportRepository {
