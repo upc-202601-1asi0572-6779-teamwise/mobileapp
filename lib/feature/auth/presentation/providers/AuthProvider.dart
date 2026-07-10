@@ -57,7 +57,7 @@ class AuthProvider extends ChangeNotifier {
       },
       (user) {
         ApiClient.authToken = user.token;
-        userId = user.id;
+        userId = user.userId;
         this.username = user.username;
         email = user.email;
         fullName = user.fullName;
@@ -66,7 +66,7 @@ class AuthProvider extends ChangeNotifier {
         _sessionStorage.save(
           token: user.token,
           username: user.username,
-          userId: user.id,
+          userId: user.userId,
           email: user.email,
           fullName: user.fullName,
           role: user.role,

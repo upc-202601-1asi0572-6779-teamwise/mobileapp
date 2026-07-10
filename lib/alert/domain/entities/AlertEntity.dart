@@ -33,7 +33,7 @@ class AlertEntity extends Equatable {
   factory AlertEntity.fromJson(Map<String, dynamic> json) {
     final timestamp = DateTime.parse(json['timestamp'] as String);
     return AlertEntity(
-      id: json['id'] as String,
+      id: (json['id'] as int).toString(),
       level: _normalizeLevel(json['level'] as String),
       title: json['message'] as String,
       block: json['sensorType'] as String?,

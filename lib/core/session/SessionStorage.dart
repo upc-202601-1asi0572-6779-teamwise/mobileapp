@@ -15,17 +15,29 @@ class SessionStorage {
     required String token,
     required String username,
     required int userId,
-    required String email,
-    required String fullName,
-    required String role,
+    String? email,
+    String? fullName,
+    String? role,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, token);
     await prefs.setString(_usernameKey, username);
     await prefs.setInt(_userIdKey, userId);
-    await prefs.setString(_emailKey, email);
-    await prefs.setString(_fullNameKey, fullName);
-    await prefs.setString(_roleKey, role);
+    if (email != null) {
+      await prefs.setString(_emailKey, email);
+    } else {
+      await prefs.remove(_emailKey);
+    }
+    if (fullName != null) {
+      await prefs.setString(_fullNameKey, fullName);
+    } else {
+      await prefs.remove(_fullNameKey);
+    }
+    if (role != null) {
+      await prefs.setString(_roleKey, role);
+    } else {
+      await prefs.remove(_roleKey);
+    }
   }
 
   Future<String?> readToken() async {
