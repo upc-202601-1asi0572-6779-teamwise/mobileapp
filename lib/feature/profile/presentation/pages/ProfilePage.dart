@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../../../../smartpalm_tokens.dart';
 import '../../../../widgets/sp_card.dart';
-import '../providers/ProfileProvider.dart';
-import '../../domain/entities/ProfileEntity.dart';
+import '../../../auth/presentation/providers/AuthProvider.dart';
+import '../../../core/providers/NavigationProvider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -22,62 +22,47 @@ class _ProfilePageState extends State<ProfilePage> {
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
     ));
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ProfileProvider>().loadProfile();
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<ProfileProvider>();
+    final auth = context.watch<AuthProvider>();
     return ColoredBox(
       color: SPColors.bg,
-      child: switch (provider.status) {
-        ProfileStatus.loading => const Center(
-            child: CircularProgressIndicator(color: SPColors.primary)),
-        ProfileStatus.error =>
-          Center(child: Text(provider.errorMessage, style: SPType.body)),
-        ProfileStatus.loaded =>
-          _ProfileBody(profile: provider.profile!),
-        _ => const SizedBox.shrink(),
-      },
-    );
-  }
-}
-
-class _ProfileBody extends StatelessWidget {
-  final ProfileEntity profile;
-  const _ProfileBody({required this.profile});
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(children: [
-        _ProfileHeader(profile: profile),
-        Padding(
-          padding: const EdgeInsets.all(SPSpacing.lg),
-          child: Column(children: [
-            _StatsRow(profile: profile),
-            const SizedBox(height: SPSpacing.lg),
-            const _PreferencesSection(),
-            const SizedBox(height: SPSpacing.lg),
-            const _TeamSection(),
-            const SizedBox(height: SPSpacing.lg),
-            const _LogoutButton(),
-            const SizedBox(height: 60),
-          ]),
-        ),
-      ]),
+      child: SingleChildScrollView(
+        child: Column(children: [
+          _ProfileHeader(auth: auth),
+          Padding(
+            padding: const EdgeInsets.all(SPSpacing.lg),
+            child: Column(children: [
+              const _NoDataSection(title: 'Mi actividad'),
+              const SizedBox(height: SPSpacing.lg),
+              const _LogoutButton(),
+              const SizedBox(height: 60),
+            ]),
+          ),
+        ]),
+      ),
     );
   }
 }
 
 class _ProfileHeader extends StatelessWidget {
-  final ProfileEntity profile;
-  const _ProfileHeader({required this.profile});
+  final AuthProvider auth;
+  const _ProfileHeader({required this.auth});
+
+  String _initials(String? name, String? username) {
+    final source = (name != null && name.trim().isNotEmpty) ? name : (username ?? '?');
+    final parts = source.trim().split(RegExp(r'\s+'));
+    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
+    return (parts.first.substring(0, 1) + parts.last.substring(0, 1)).toUpperCase();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final displayName = (auth.fullName != null && auth.fullName!.trim().isNotEmpty)
+        ? auth.fullName!
+        : (auth.username ?? '');
     return Container(
       decoration: const BoxDecoration(gradient: SPColors.headerGradient),
       padding: const EdgeInsets.fromLTRB(
@@ -92,34 +77,35 @@ class _ProfileHeader extends StatelessWidget {
             radius: 32,
             backgroundColor: const Color(0xFF4CCD82),
             child: Text(
-              profile.initials,
-              style: SPType.hero.copyWith(
-                  fontSize: 22, color: SPColors.primaryDark),
+              _initials(auth.fullName, auth.username),
+              style: SPType.hero.copyWith(fontSize: 22, color: SPColors.primaryDark),
             ),
           ),
         ),
         const SizedBox(width: 14),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(profile.name,
+            Text(displayName,
                 style: SPType.hero.copyWith(fontSize: 22, color: Colors.white)),
             const SizedBox(height: 2),
-            Text('${profile.farm} · ${profile.location}',
+            Text(auth.email ?? '',
                 style: SPType.caption.copyWith(color: const Color(0xA6FFFFFF))),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: const Color(0x334CCD82),
-                border: Border.all(color: const Color(0x594CCD82)),
-                borderRadius: BorderRadius.circular(8),
+            if (auth.role != null) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0x334CCD82),
+                  border: Border.all(color: const Color(0x594CCD82)),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  auth.role!,
+                  style: SPType.tag.copyWith(
+                      color: const Color(0xFF86EFAC), fontWeight: FontWeight.w600),
+                ),
               ),
-              child: Text(
-                profile.plan,
-                style: SPType.tag.copyWith(
-                    color: const Color(0xFF86EFAC), fontWeight: FontWeight.w600),
-              ),
-            ),
+            ],
           ]),
         ),
       ]),
@@ -127,160 +113,21 @@ class _ProfileHeader extends StatelessWidget {
   }
 }
 
-class _StatsRow extends StatelessWidget {
-  final ProfileEntity profile;
-  const _StatsRow({required this.profile});
-
-  @override
-  Widget build(BuildContext context) {
-    final stats = <(String, String)>[
-      ('${profile.totalHectares.toInt()} ha', 'Superficie'),
-      ('${profile.totalSensors}', 'Sensores'),
-      ('${profile.totalParcelas}', 'Parcelas'),
-    ];
-    return Row(
-      children: stats.map<Widget>((s) {
-        final value = s.$1;
-        final label = s.$2;
-        return Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(right: label != 'Parcelas' ? 10 : 0),
-            child: SPCard(
-              margin: EdgeInsets.zero,
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-              child: Column(children: [
-                Text(value,
-                    style: SPType.metricValue.copyWith(
-                        fontSize: 20, color: SPColors.primaryDark)),
-                const SizedBox(height: 2),
-                Text(label,
-                    style: SPType.caption.copyWith(color: SPColors.muted)),
-              ]),
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
-
-class _PreferencesSection extends StatelessWidget {
-  const _PreferencesSection();
-
-  @override
-  Widget build(BuildContext context) {
-    const prefs = <(IconData, String, String)>[
-      (Icons.language, 'Idioma', 'Español'),
-      (Icons.notifications_outlined, 'Notificaciones', 'Activadas'),
-      (Icons.wifi, 'Red LoRaWAN', 'SP-GW-001'),
-    ];
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text('Preferencias',
-          style: SPType.sectionHeading.copyWith(color: SPColors.text)),
-      const SizedBox(height: 10),
-      SPCard(
-        child: Column(
-          children: List.generate(prefs.length, (i) {
-            final icon = prefs[i].$1;
-            final label = prefs[i].$2;
-            final value = prefs[i].$3;
-            return Column(children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: SPSpacing.lg, vertical: 13),
-                child: Row(children: [
-                  Container(
-                    width: 32, height: 32,
-                    decoration: BoxDecoration(
-                      color: SPColors.softGreen,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(icon, color: SPColors.primaryDark, size: 16),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(child: Text(label, style: SPType.body)),
-                  Text(value,
-                      style: SPType.bodySmall.copyWith(color: SPColors.muted)),
-                  const Icon(Icons.chevron_right,
-                      color: SPColors.muted, size: 16),
-                ]),
-              ),
-              if (i < prefs.length - 1)
-                const Divider(height: 1, color: Color(0xFFF3F4F6)),
-            ]);
-          }),
-        ),
-      ),
-    ]);
-  }
-}
-
-class _TeamSection extends StatelessWidget {
-  const _TeamSection();
-
-  static const _team = [
-    ('VR', 'Víctor Rojas',  'Lead Engineer', Color(0xFFA8F0C6)),
-    ('RJ', 'Renso Julca',   'Backend IoT',   Color(0xFFCFF9FE)),
-    ('JP', 'Jeremy Paucar', 'Mobile Dev',    Color(0xFFFEF3C7)),
-    ('RL', 'Renzo Loli',    'Frontend Web',  Color(0xFFEEF5F1)),
-    ('JT', 'Javier Tello',  'Embedded Sys',  Color(0xFFD1FAE5)),
-    ('SC', 'Sebastian C.',  'UX / QA',       Color(0xFFFDE8D8)),
-  ];
+class _NoDataSection extends StatelessWidget {
+  final String title;
+  const _NoDataSection({required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text('Equipo TempWise · UPC',
-          style: SPType.sectionHeading.copyWith(color: SPColors.text)),
+      Text(title, style: SPType.sectionHeading.copyWith(color: SPColors.text)),
       const SizedBox(height: 10),
       SPCard(
-        padding: const EdgeInsets.all(SPSpacing.m),
-        child: GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          childAspectRatio: 3.5,
-          children: _team.map<Widget>((m) =>
-            _TeamMember(initials: m.$1, name: m.$2,
-                role: m.$3, avatarColor: m.$4),
-          ).toList(),
+        padding: const EdgeInsets.symmetric(vertical: SPSpacing.x2l, horizontal: SPSpacing.lg),
+        child: Center(
+          child: Text('No hay datos registrados aún',
+              style: SPType.body.copyWith(color: SPColors.muted)),
         ),
-      ),
-    ]);
-  }
-}
-
-class _TeamMember extends StatelessWidget {
-  final String initials, name, role;
-  final Color avatarColor;
-  const _TeamMember(
-      {required this.initials, required this.name,
-       required this.role, required this.avatarColor});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(children: [
-      CircleAvatar(
-        radius: 19,
-        backgroundColor: avatarColor,
-        child: Text(initials,
-            style: SPType.tag.copyWith(
-                color: SPColors.primaryDark, fontSize: 13)),
-      ),
-      const SizedBox(width: 10),
-      Expanded(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text(name,
-              style: SPType.caption.copyWith(
-                  fontWeight: FontWeight.w600, color: SPColors.text),
-              overflow: TextOverflow.ellipsis),
-          Text(role,
-              style: SPType.caption.copyWith(color: SPColors.muted),
-              overflow: TextOverflow.ellipsis),
-        ]),
       ),
     ]);
   }
@@ -294,8 +141,7 @@ class _LogoutButton extends StatelessWidget {
     return GestureDetector(
       onTap: () => _confirmLogout(context),
       child: Container(
-        padding: const EdgeInsets.symmetric(
-            horizontal: SPSpacing.m, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: SPSpacing.m, vertical: 14),
         decoration: BoxDecoration(
           color: const Color(0xFFFEF2F2),
           border: Border.all(color: const Color(0xFFFECACA)),
@@ -304,7 +150,7 @@ class _LogoutButton extends StatelessWidget {
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           const Icon(Icons.logout, color: SPColors.crit, size: 18),
           const SizedBox(width: 10),
-          Text('Cerrar sesión',
+          Text('Cerrar Sesión',
               style: SPType.sectionHeading.copyWith(
                   color: SPColors.crit, fontWeight: FontWeight.w600)),
         ]),
@@ -317,17 +163,20 @@ class _LogoutButton extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Cerrar sesión'),
-        content:
-            const Text('¿Estás seguro de que deseas cerrar sesión?'),
+        content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancelar'),
           ),
           FilledButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              context.read<ProfileProvider>().logout(context);
+              await context.read<AuthProvider>().signOut();
+              context.read<NavigationProvider>().switchTab(0);
+              if (context.mounted) {
+                Navigator.of(context).pushNamedAndRemoveUntil('/login', (_) => false);
+              }
             },
             style: FilledButton.styleFrom(backgroundColor: SPColors.crit),
             child: const Text('Cerrar sesión'),
